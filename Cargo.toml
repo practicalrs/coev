@@ -1,6 +1,15 @@
 [package]
 name = "coev"
 version = "0.1.0"
-edition = "2024"
+edition = "2021"
 
 [dependencies]
+clap = { version = "4.5.29", default-features = false, features = [
+    "derive",
+    "env",
+    "help",
+    "std"
+] }
+tokio = { version = "1.43.0", default-features = false, features = [
+    "full"
+] }
