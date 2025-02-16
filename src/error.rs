@@ -3,6 +3,8 @@ use std::{error, fmt};
 #[derive(Debug)]
 pub enum Error {
     OllamaHostAddresMissing,
+    OllamaRequestProblem,
+    Parsing,
     SourceFileNotFound,
 }
 

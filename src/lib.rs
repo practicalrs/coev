@@ -1,9 +1,13 @@
 use clap::Parser;
-use std::error::Error;
+use std::{error::Error, sync::Arc};
 
 mod config;
 mod error;
+mod evolution;
+mod extract;
+mod ollama;
 mod repo;
+mod score;
 
 type Result<T> = std::result::Result<T, Box<dyn Error + Send + Sync>>;
 
@@ -14,6 +18,10 @@ pub struct Args {
     #[arg(long, short)]
     pub dir: String,
 
+    /// Ollama model
+    #[arg(long, short)]
+    pub model: String,
+
     /// Program theme
     #[arg(long, short)]
     pub theme: Option<String>,
@@ -21,10 +29,11 @@ pub struct Args {
 
 pub async fn run() -> Result<()> {
     let args = Args::parse();
-
-    let config = config::load(args)?;
+    let config = Arc::new(config::load(args)?);
 
     let source = repo::read_source(&config.dir).await?;
-    println!("test {:?}", source);
+
+    evolution::evolve(config, &source).await?;
+
     Ok(())
 }
