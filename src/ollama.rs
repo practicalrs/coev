@@ -4,7 +4,7 @@ use serde::{Deserialize, Serialize};
 use std::sync::Arc;
 use tokio::time::Duration;
 
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct Message {
     pub content: String,
     pub role: String,
@@ -19,16 +19,16 @@ pub struct OllamaRequest {
 
 #[derive(Debug, Deserialize)]
 pub struct OllamaResponse {
-    created_at: String,
-    done: bool,
-    eval_count: i64,
-    eval_duration: i64,
-    load_duration: i64,
+    //    created_at: String,
+    //    done: bool,
+    //    eval_count: i64,
+    //    eval_duration: i64,
+    //    load_duration: i64,
     message: Message,
-    model: String,
-    prompt_eval_count: i64,
-    prompt_eval_duration: i64,
-    total_duration: i64,
+    //    model: String,
+    //    prompt_eval_count: i64,
+    //    prompt_eval_duration: i64,
+    //    total_duration: i64,
 }
 
 pub async fn request(config: Arc<Config>, messages: Vec<Message>) -> Result<String> {
@@ -51,7 +51,7 @@ pub async fn request(config: Arc<Config>, messages: Vec<Message>) -> Result<Stri
     match response {
         Err(_) => {
             return Err(Box::new(Error::OllamaRequestProblem));
-        },
+        }
         Ok(response) => {
             if response.status() == StatusCode::CREATED || response.status() == StatusCode::OK {
                 let response_text = response.text().await?;
