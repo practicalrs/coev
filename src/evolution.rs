@@ -15,10 +15,10 @@ pub async fn evolve(config: Arc<Config>, source: &str) -> Result<()> {
     while !accepted {
         let mutation = mutation(config.clone(), source).await?;
 
-        if mutation.is_empty() || mutation == source.to_string() {
+        if mutation.is_empty() || mutation == *source {
             println!("Mutation is empty or looks like a source - regenerating.");
 
-            continue
+            continue;
         }
 
         println!("Step 3 - getting a score for the mutated program.");
@@ -32,10 +32,8 @@ pub async fn evolve(config: Arc<Config>, source: &str) -> Result<()> {
             if number >= 20 {
                 accepted = true;
             }
-        } else {
-            if number <= 40 {
-                accepted = true;
-            }
+        } else if number <= 40 {
+            accepted = true;
         }
     }
 

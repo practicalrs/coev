@@ -61,5 +61,6 @@ I wonder what the code will look like after dozens, hundreds, and thousands of s
 Actually, there are no plans to publish this program on crates. (Unless there will be a higher demand, I don't see a point in polluting crates repo.) You need to download code from this repository and run it manually.
 
 ```sh
-cargo run -- --dir=/home/michal/projects/test-lib2 --theme="AI lib" --model="qwen2.5-coder:3b"
+cargo run -- --cycles=10 --dir=/home/michal/projects/test-lib4 --theme=
+"AI lib" --model="qwen2.5-coder:3b"
 ```

@@ -30,7 +30,7 @@ pub async fn evaluate(config: Arc<Config>, source: &str, feature_added: bool) ->
     messages.push(message);
 
     if feature_added {
-        let prompt = format!("The following code contains a new feature that improves the code. Make sure this new feature makes sense and take it into account while calculating scores.");
+        let prompt = "The following code contains a new feature that improves the code. Make sure this new feature makes sense and take it into account while calculating scores.".to_string();
         let message = Message {
             content: prompt,
             role: "user".to_string(),
