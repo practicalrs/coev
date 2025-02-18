@@ -14,6 +14,13 @@ pub async fn evolve(config: Arc<Config>, source: &str) -> Result<()> {
     println!("score_original = {}", score_original);
     while !accepted {
         let mutation = mutation(config.clone(), source).await?;
+
+        if mutation.is_empty() || mutation == source.to_string() {
+            println!("Mutation is empty or looks like a source - regenerating.");
+
+            continue
+        }
+
         println!("Step 3 - getting a score for the mutated program.");
         let score_mutated = score::evaluate(config.clone(), &mutation, true).await?;
         println!("score_mutated = {}", score_mutated);
@@ -43,7 +50,7 @@ pub async fn mutation(config: Arc<Config>, source: &str) -> Result<String> {
     println!("Step 2 - creating mutation.");
     let mut messages = vec![];
 
-    let system_prompt = "You will get a library code written in Rust. You need to do only one thing. You can choose from the following options: 1 Create a new feature. 2 Improve test coverage. 3 Optimize code. You can add only one small thing - feature, test, or optimize the code. There is a preference to create a new feature 50%, add test 30%, optimize code 20%. Make sure you maintain a proper balance between new features and tests. You can use only Rust's standard library. Forget about using rand crate. You can not use crates. Make sure you create pub functions, otherwise, there will be warnings about not-used functions. Make sure to put code inside the ```rust``` block.";
+    let system_prompt = "You will get a library code written in Rust. You need to do only one thing. You can choose from the following options: 1 Create a new feature. 2 Improve test coverage. 3 Optimize code. You can add only one small thing - feature, test, or optimize the code. Don't delete code if the new code is not a functional replacement. You need to maintain backward compatibility with previous library version. There is a preference to create a new feature 50%, add test 30%, optimize code 20%. Make sure you maintain a proper balance between new features and tests. You can use only Rust's standard library. Forget about using rand crate. You can not use crates. Make sure you create pub functions, otherwise, there will be warnings about not-used functions. Make sure to put code inside the ```rust``` block.";
     let message = Message {
         content: system_prompt.to_string(),
         role: "system".to_string(),
@@ -76,7 +83,7 @@ pub async fn mutation(config: Arc<Config>, source: &str) -> Result<String> {
 
     println!("test_passed = {}", test_passed);
     println!("test_result = {}", test_result);
-
+    let mut iteration = 2;
     if !test_passed {
         let message = Message {
             content: response.clone(),
@@ -105,6 +112,12 @@ pub async fn mutation(config: Arc<Config>, source: &str) -> Result<String> {
 
             println!("test_passed = {}", test_passed);
             println!("test_result = {}", test_result);
+            println!("iteration = {}", iteration);
+            iteration += 1;
+
+            if iteration > 7 {
+                return Ok(String::new());
+            }
         }
     }
 
