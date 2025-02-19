@@ -80,7 +80,7 @@ pub async fn mutation(config: Arc<Config>, source: &str) -> Result<String> {
     let (mut test_passed, mut test_result) = test_mutation(config.clone()).await?;
 
     println!("test_passed = {}", test_passed);
-    println!("test_result = {}", test_result);
+    //println!("test_result = {}", test_result);
     let mut iteration = 2;
     if !test_passed {
         let message = Message {
@@ -109,7 +109,7 @@ pub async fn mutation(config: Arc<Config>, source: &str) -> Result<String> {
             (test_passed, test_result) = test_mutation(config.clone()).await?;
 
             println!("test_passed = {}", test_passed);
-            println!("test_result = {}", test_result);
+            //println!("test_result = {}", test_result);
             println!("iteration = {}", iteration);
             iteration += 1;
 
@@ -124,37 +124,53 @@ pub async fn mutation(config: Arc<Config>, source: &str) -> Result<String> {
 
 pub async fn test_mutation(config: Arc<Config>) -> Result<(bool, String)> {
     let build_command = format!("cd {} && cargo build", config.dir);
-    let build_command_result = Command::new("sh")
-        .arg("-c")
-        .arg(build_command)
-        .output()?
-        .stderr;
-    let build_command_result = String::from_utf8(build_command_result)?;
+    let build_command_result = Command::new("sh").arg("-c").arg(build_command).output()?;
+    let build_command_result_stderr = build_command_result.stderr;
+    let build_command_result_stdout = build_command_result.stdout;
+    let build_command_result_stderr = String::from_utf8(build_command_result_stderr)?;
+    let build_command_result_stdout = String::from_utf8(build_command_result_stdout)?;
 
-    if build_command_result.contains("error: could not compile") {
-        return Ok((false, build_command_result));
+    println!(
+        "build_command_result_stderr = {:?}",
+        build_command_result_stderr
+    );
+    println!(
+        "build_command_result_stdout = {:?}",
+        build_command_result_stdout
+    );
+
+    if build_command_result_stderr.contains("error: could not compile") {
+        return Ok((false, build_command_result_stderr));
     }
 
     let test_command = format!("cd {} && cargo test", config.dir);
-    let test_command_result = Command::new("sh")
-        .arg("-c")
-        .arg(test_command)
-        .output()?
-        .stderr;
-    let test_command_result = String::from_utf8(test_command_result)?;
+    let test_command_result = Command::new("sh").arg("-c").arg(test_command).output()?;
+    let test_command_result_stderr = test_command_result.stderr;
+    let test_command_result_stdout = test_command_result.stdout;
+    let test_command_result_stderr = String::from_utf8(test_command_result_stderr)?;
+    let test_command_result_stdout = String::from_utf8(test_command_result_stdout)?;
 
-    if test_command_result.contains("test result: FAILED")
-        || test_command_result.contains("error: test failed")
-        || test_command_result.contains("error: doctest failed")
-        || test_command_result.contains("error: could not compile")
+    println!(
+        "test_command_result_stderr = {:?}",
+        test_command_result_stderr
+    );
+    println!(
+        "test_command_result_stdout = {:?}",
+        test_command_result_stdout
+    );
+
+    if test_command_result_stderr.contains("test result: FAILED")
+        || test_command_result_stderr.contains("error: test failed")
+        || test_command_result_stderr.contains("error: doctest failed")
+        || test_command_result_stderr.contains("error: could not compile")
     {
-        return Ok((false, test_command_result));
+        return Ok((false, test_command_result_stderr));
     }
 
     let mut result = String::new();
-    result.push_str(&build_command_result);
+    result.push_str(&build_command_result_stderr);
     result.push_str("\n\n");
-    result.push_str(&test_command_result);
+    result.push_str(&test_command_result_stderr);
 
     Ok((true, result))
 }
