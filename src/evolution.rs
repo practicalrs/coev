@@ -1,8 +1,9 @@
 use crate::{
+    Result,
     config::Config,
     extract,
     ollama::{self, Message},
-    repo, score, Result,
+    repo, score,
 };
 use rand::Rng;
 use std::{process::Command, sync::Arc};

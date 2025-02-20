@@ -1,4 +1,4 @@
-use crate::{error::Error, Result};
+use crate::{Result, error::Error};
 
 pub async fn extract_json(text: &str) -> Result<String> {
     let text = text.to_string();

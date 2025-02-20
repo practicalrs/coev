@@ -1,4 +1,4 @@
-use crate::{config::Config, error::Error, Result};
+use crate::{Result, config::Config, error::Error};
 use reqwest::StatusCode;
 use serde::{Deserialize, Serialize};
 use std::sync::Arc;

@@ -1,8 +1,8 @@
 use crate::{
+    Result,
     config::Config,
     extract,
     ollama::{self, Message},
-    Result,
 };
 use serde::Deserialize;
 use std::sync::Arc;

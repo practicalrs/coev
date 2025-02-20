@@ -1,4 +1,4 @@
-use crate::{error::Error, Args, Result};
+use crate::{Args, Result, error::Error};
 
 #[derive(Clone, Debug)]
 pub struct Config {

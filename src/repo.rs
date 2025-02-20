@@ -1,4 +1,4 @@
-use crate::{error::Error, Result};
+use crate::{Result, error::Error};
 use std::{
     fs::{read_to_string, write},
     path::Path,
